@@ -21,7 +21,7 @@ class DealsService {
     return { ...deal };
   }
 
-  async create(dealData) {
+async create(dealData) {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 400));
     
@@ -31,8 +31,16 @@ class DealsService {
     
     const newDeal = {
       Id: maxId + 1,
-      ...dealData,
-      status: dealData.status || 'lead',
+      title: dealData.title,
+      contactId: dealData.contactId,
+      contactName: dealData.contactName || 'Unknown Contact',
+      company: dealData.company || 'No Company',
+      value: dealData.value || 0,
+      probability: dealData.probability || 50,
+      expectedCloseDate: dealData.expectedCloseDate,
+      notes: dealData.notes || '',
+      assignedTo: dealData.assignedTo || null,
+      status: dealData.status || 'active',
       stage: dealData.stage || 'Lead',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

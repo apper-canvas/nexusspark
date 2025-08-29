@@ -5,12 +5,13 @@ import Header from "@/components/organisms/Header";
 import Loading from "@/components/ui/Loading";
 import { dealsService } from "@/services/api/dealsService";
 import DealKanbanBoard from "@/components/organisms/DealKanbanBoard";
-
+import AddDealModal from "@/components/organisms/AddDealModal";
 const DealsPage = () => {
   const { toggleSidebar } = useOutletContext();
-  const [deals, setDeals] = useState([]);
+const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
     loadDeals();
@@ -27,6 +28,16 @@ const DealsPage = () => {
       toast.error(`Failed to load deals: ${err.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+const handleAddDeal = async (dealData) => {
+    try {
+      const newDeal = await dealsService.create(dealData);
+      setDeals(prev => [newDeal, ...prev]);
+      return newDeal;
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -57,8 +68,10 @@ const DealsPage = () => {
   return (
     <div className="flex-1 overflow-hidden">
       <Header
-        title="Deals"
+title="Deals"
         onMenuClick={toggleSidebar}
+        onAddClick={() => setShowAddModal(true)}
+        buttonText="Add Deal"
       />
       
       <div className="p-6">
@@ -67,6 +80,11 @@ const DealsPage = () => {
           onStatusChange={handleStatusChange}
         />
       </div>
+<AddDealModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleAddDeal}
+      />
     </div>
   );
 };
