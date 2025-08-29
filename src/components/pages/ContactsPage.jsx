@@ -138,7 +138,7 @@ const ContactsPage = () => {
     );
   }
 return (
-    <div className={cn("flex-1 overflow-hidden transition-all duration-300", showAddModal && "backdrop-blur-sm")}>
+<div className="flex-1 overflow-hidden">
       <Header
         title="Contacts"
         onMenuClick={toggleSidebar}
@@ -146,7 +146,7 @@ return (
         onSearchChange={handleSearchChange}
         onAddClick={() => setShowAddModal(true)}
       />
-<div className={cn("p-6 transition-all duration-300", showAddModal && "backdrop-blur-sm")}>
+<div className="p-6">
         {contacts.length === 0 ? (
           <Empty
             title="No contacts yet"
