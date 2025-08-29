@@ -18,8 +18,11 @@ const [companies, setCompanies] = useState([]);
   const [companiesLoading, setCompaniesLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      loadCompanies();
+if (isOpen) {
+      const timeoutId = setTimeout(() => {
+        loadCompanies();
+      }, 50);
+      return () => clearTimeout(timeoutId);
     }
   }, [isOpen]);
 
@@ -115,15 +118,18 @@ setErrors(newErrors);
     }
   };
 
-  const handleClose = () => {
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      companyId: "",
-      notes: ""
-    });
-    setErrors({});
+const handleClose = () => {
+    // Reset form data after modal closes to prevent state interference
+    setTimeout(() => {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        companyId: "",
+        notes: ""
+      });
+      setErrors({});
+    }, 200);
     onClose();
   };
 
