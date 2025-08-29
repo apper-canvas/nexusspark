@@ -30,7 +30,7 @@ const Header = ({ title, onMenuClick, searchValue, onSearchChange, onAddClick, b
               <SearchBar
                 value={searchValue || ""}
                 onChange={onSearchChange}
-                placeholder="Search contacts..."
+placeholder={`Search ${title.toLowerCase()}...`}
               />
             )}
           </div>
@@ -53,7 +53,7 @@ const Header = ({ title, onMenuClick, searchValue, onSearchChange, onAddClick, b
             <SearchBar
               value={searchValue || ""}
               onChange={onSearchChange}
-              placeholder="Search contacts..."
+placeholder={`Search ${title.toLowerCase()}...`}
             />
           </div>
         )}
