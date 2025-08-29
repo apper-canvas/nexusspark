@@ -134,7 +134,7 @@ setErrors(newErrors);
       title="Add New Contact"
       size="md"
     >
-<form onSubmit={handleSubmit} className="space-y-4 -z-1">
+<form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             label="Full Name"
