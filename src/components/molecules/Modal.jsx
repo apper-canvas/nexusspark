@@ -34,14 +34,18 @@ const Modal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+<div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 modal-overlay"
+              className="fixed inset-0"
+              style={{
+                backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                backdropFilter: 'blur(8px)'
+              }}
               onClick={onClose}
             />
 

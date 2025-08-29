@@ -1,13 +1,14 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import Header from "@/components/organisms/Header";
+import { contactService } from "@/services/api/contactService";
+import { cn } from "@/utils/cn";
+import AddContactModal from "@/components/organisms/AddContactModal";
 import ContactTable from "@/components/organisms/ContactTable";
 import ContactDetailModal from "@/components/organisms/ContactDetailModal";
-import AddContactModal from "@/components/organisms/AddContactModal";
-import Loading from "@/components/ui/Loading";
+import Header from "@/components/organisms/Header";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import { contactService } from "@/services/api/contactService";
+import Loading from "@/components/ui/Loading";
 
 const ContactsPage = () => {
   const { toggleSidebar } = useOutletContext();
@@ -136,9 +137,8 @@ const ContactsPage = () => {
       </div>
     );
   }
-
-  return (
-    <div className="flex-1 overflow-hidden">
+return (
+    <div className={cn("flex-1 overflow-hidden transition-all duration-300", showAddModal && "backdrop-blur-sm")}>
       <Header
         title="Contacts"
         onMenuClick={toggleSidebar}
@@ -146,8 +146,7 @@ const ContactsPage = () => {
         onSearchChange={handleSearchChange}
         onAddClick={() => setShowAddModal(true)}
       />
-
-      <div className="p-6">
+<div className={cn("p-6 transition-all duration-300", showAddModal && "backdrop-blur-sm")}>
         {contacts.length === 0 ? (
           <Empty
             title="No contacts yet"
