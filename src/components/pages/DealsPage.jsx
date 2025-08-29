@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Header from "@/components/organisms/Header";
 import Loading from "@/components/ui/Loading";
 import { dealsService } from "@/services/api/dealsService";
 import DealKanbanBoard from "@/components/organisms/DealKanbanBoard";
 import AddDealModal from "@/components/organisms/AddDealModal";
+import DealDetailModal from "@/components/organisms/DealDetailModal";
 const DealsPage = () => {
   const { toggleSidebar } = useOutletContext();
 const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedDeal, setSelectedDeal] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDeals();
@@ -30,7 +34,19 @@ const [deals, setDeals] = useState([]);
       setLoading(false);
     }
   };
+const handleDealClick = (deal) => {
+    setSelectedDeal(deal);
+    setShowDetailModal(true);
+  };
 
+  const handleDetailModalClose = () => {
+    setShowDetailModal(false);
+    setSelectedDeal(null);
+  };
+
+  const handleViewDealPage = (dealId) => {
+    navigate(`/deals/${dealId}`);
+  };
 const handleAddDeal = async (dealData) => {
     try {
       const newDeal = await dealsService.create(dealData);
@@ -52,7 +68,13 @@ const handleAddDeal = async (dealData) => {
       toast.error(`Failed to update deal: ${err.message}`);
     }
   };
-
+{selectedDeal && (
+          <DealDetailModal
+            deal={selectedDeal}
+            isOpen={showDetailModal}
+            onClose={handleDetailModalClose}
+          />
+        )}
   if (loading) return <Loading type="page" />;
   if (error) return (
     <div className="flex-1 overflow-hidden">
@@ -77,7 +99,8 @@ title="Deals"
       <div className="p-6">
         <DealKanbanBoard 
           deals={deals} 
-          onStatusChange={handleStatusChange}
+onStatusChange={handleStatusChange}
+          onDealClick={handleDealClick}
         />
       </div>
 <AddDealModal

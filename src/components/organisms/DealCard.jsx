@@ -1,7 +1,7 @@
 import Card from "@/components/atoms/Card";
 import ApperIcon from "@/components/ApperIcon";
 
-const DealCard = ({ deal, onDragStart, onDragEnd, isDragging }) => {
+const DealCard = ({ deal, onDragStart, onDragEnd, isDragging, onClick }) => {
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -35,7 +35,7 @@ const DealCard = ({ deal, onDragStart, onDragEnd, isDragging }) => {
   };
 
   return (
-    <Card
+<Card
       className={`p-4 cursor-move hover:shadow-md transition-all duration-200 border-l-4 ${
         deal.stage === 'Lead' ? 'border-l-slate-400' :
         deal.stage === 'Qualified' ? 'border-l-blue-400' :
@@ -46,6 +46,7 @@ const DealCard = ({ deal, onDragStart, onDragEnd, isDragging }) => {
       draggable="true"
       onDragStart={(e) => onDragStart(e, deal)}
       onDragEnd={onDragEnd}
+      onClick={() => onClick && onClick(deal)}
     >
       {/* Deal Title */}
       <h3 className="font-medium text-slate-900 mb-2 line-clamp-2">
