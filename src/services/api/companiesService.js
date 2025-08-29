@@ -237,6 +237,3 @@ class CompaniesService {
 
 const companiesService = new CompaniesService();
 export default companiesService;
-
-const companiesService = new CompaniesService();
-export default companiesService;

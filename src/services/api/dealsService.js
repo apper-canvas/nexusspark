@@ -368,4 +368,3 @@ class DealsService {
 }
 
 export const dealsService = new DealsService();
-export const dealsService = new DealsService();

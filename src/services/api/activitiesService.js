@@ -475,6 +475,3 @@ class ActivitiesService {
 }
 
 export const activitiesService = new ActivitiesService();
-
-// Export singleton instance
-export const activitiesService = new ActivitiesService();
