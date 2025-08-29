@@ -12,9 +12,6 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
   const [contacts, setContacts] = useState([]);
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState({ contacts: false, deals: false });
-
-  if (!company) return null;
-
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -31,7 +28,7 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
     { id: "activities", label: "Activities", icon: "Clock" }
   ];
 
-  const renderTabContent = () => {
+const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
         return (
@@ -222,9 +219,7 @@ case "deals":
       default:
         return null;
     }
-};
-
-  const loadCompanyData = async () => {
+const loadCompanyData = async () => {
     if (!company || !isOpen) return;
 
     // Load contacts for this company
@@ -266,13 +261,15 @@ case "deals":
 
   useEffect(() => {
     loadCompanyData();
-  }, [company, isOpen, activeTab]);
+}, [company, isOpen, activeTab]);
 
-  return (
+  // Early return AFTER all hooks have been called
+  if (!company) return null;
+
+return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Company Details"
       size="xl"
     >
       <div className="space-y-6">
