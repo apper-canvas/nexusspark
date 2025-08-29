@@ -1,13 +1,17 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
-import Modal from "@/components/molecules/Modal";
+import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
+import Modal from "@/components/molecules/Modal";
 import Card from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
-import { cn } from "@/utils/cn";
+import Loading from "@/components/ui/Loading";
 
 const CompanyDetailModal = ({ company, isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState("overview");
+  const [contacts, setContacts] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState({ contacts: false, deals: false });
 
   if (!company) return null;
 
@@ -113,31 +117,88 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
           </div>
         );
 
-      case "contacts":
+case "contacts":
         return (
-          <div className="text-center py-12">
-            <ApperIcon name="Users" className="mx-auto h-12 w-12 text-slate-400" />
-            <h3 className="mt-2 text-sm font-medium text-slate-900">Contact Management</h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Contact management for companies will be available soon.
-            </p>
-            <p className="mt-2 text-xs text-slate-400">
-              Currently showing {company.contactCount} associated contacts
-            </p>
+          <div className="space-y-4">
+            {loading.contacts ? (
+              <div className="text-center py-8">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+                <p className="text-sm text-slate-500 mt-2">Loading contacts...</p>
+              </div>
+            ) : contacts.length > 0 ? (
+              <div className="space-y-3">
+                {contacts.map(contact => (
+                  <div key={contact.Id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                        <span className="text-sm font-medium text-white">
+                          {contact.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-slate-900">{contact.name}</p>
+                        <p className="text-xs text-slate-500">{contact.email}</p>
+                      </div>
+                    </div>
+                    {contact.phone && (
+                      <p className="text-sm text-slate-600">{contact.phone}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <ApperIcon name="Users" className="mx-auto h-12 w-12 text-slate-400" />
+                <h3 className="mt-2 text-sm font-medium text-slate-900">No Contacts</h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  No contacts are associated with this company yet.
+                </p>
+              </div>
+            )}
           </div>
         );
 
-      case "deals":
+case "deals":
         return (
-          <div className="text-center py-12">
-            <ApperIcon name="DollarSign" className="mx-auto h-12 w-12 text-slate-400" />
-            <h3 className="mt-2 text-sm font-medium text-slate-900">Deal Tracking</h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Deal tracking for companies will be available soon.
-            </p>
-            <p className="mt-2 text-xs text-slate-400">
-              Total deal value: {formatCurrency(company.totalDealValue)}
-            </p>
+          <div className="space-y-4">
+            {loading.deals ? (
+              <div className="text-center py-8">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+                <p className="text-sm text-slate-500 mt-2">Loading deals...</p>
+              </div>
+            ) : deals.length > 0 ? (
+              <div className="space-y-3">
+                {deals.map(deal => (
+                  <div key={deal.Id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <p className="text-sm font-medium text-slate-900">{deal.title}</p>
+                        <span className={`px-2 py-1 text-xs rounded-full ${
+                          deal.stage === 'Won' ? 'bg-green-100 text-green-800' :
+                          deal.stage === 'Lost' ? 'bg-red-100 text-red-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {deal.stage}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">{deal.contactName}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-slate-900">{formatCurrency(deal.value)}</p>
+                      <p className="text-xs text-slate-500">{deal.probability}% probability</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <ApperIcon name="DollarSign" className="mx-auto h-12 w-12 text-slate-400" />
+                <h3 className="mt-2 text-sm font-medium text-slate-900">No Deals</h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  No deals are associated with this company yet.
+                </p>
+              </div>
+            )}
           </div>
         );
 
@@ -161,7 +222,51 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
       default:
         return null;
     }
+};
+
+  const loadCompanyData = async () => {
+    if (!company || !isOpen) return;
+
+    // Load contacts for this company
+    if (activeTab === 'contacts' && !loading.contacts) {
+      setLoading(prev => ({ ...prev, contacts: true }));
+      try {
+        const { contactService } = await import('@/services/api/contactService');
+        const allContacts = await contactService.getAll();
+        const companyContacts = allContacts.filter(contact => 
+          contact.company === company.name || contact.companyId === company.Id
+        );
+        setContacts(companyContacts);
+      } catch (error) {
+        console.error('Failed to load contacts:', error);
+        setContacts([]);
+      } finally {
+        setLoading(prev => ({ ...prev, contacts: false }));
+      }
+    }
+
+    // Load deals for this company
+    if (activeTab === 'deals' && !loading.deals) {
+      setLoading(prev => ({ ...prev, deals: true }));
+      try {
+        const { dealsService } = await import('@/services/api/dealsService');
+        const allDeals = await dealsService.getAll();
+        const companyDeals = allDeals.filter(deal => 
+          deal.company === company.name
+        );
+        setDeals(companyDeals);
+      } catch (error) {
+        console.error('Failed to load deals:', error);
+        setDeals([]);
+      } finally {
+        setLoading(prev => ({ ...prev, deals: false }));
+      }
+    }
   };
+
+  useEffect(() => {
+    loadCompanyData();
+  }, [company, isOpen, activeTab]);
 
   return (
     <Modal

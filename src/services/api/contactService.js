@@ -21,7 +21,7 @@ class ContactService {
     return { ...contact };
   }
 
-  async create(contactData) {
+async create(contactData) {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 400));
     
@@ -38,6 +38,17 @@ class ContactService {
     };
 
     this.contacts.push(newContact);
+    
+    // Update company metrics if company is specified
+    if (newContact.companyId) {
+      try {
+        const companiesService = (await import('./companiesService')).default;
+        await companiesService.updateCompanyMetrics(newContact.companyId);
+      } catch (error) {
+        console.error('Failed to update company metrics:', error);
+      }
+    }
+    
     return { ...newContact };
   }
 

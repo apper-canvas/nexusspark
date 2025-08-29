@@ -48,6 +48,21 @@ async create(dealData) {
     };
 
     this.deals.push(newDeal);
+    
+    // Update company metrics for the associated company
+    if (newDeal.company && newDeal.company !== 'No Company') {
+      try {
+        const companiesService = (await import('./companiesService')).default;
+        const allCompanies = await companiesService.getAll();
+        const company = allCompanies.find(c => c.name === newDeal.company);
+        if (company) {
+          await companiesService.updateCompanyMetrics(company.Id);
+        }
+      } catch (error) {
+        console.error('Failed to update company metrics:', error);
+      }
+    }
+    
     return { ...newDeal };
   }
 

@@ -1,20 +1,39 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Modal from "@/components/molecules/Modal";
 import FormField from "@/components/molecules/FormField";
 import Button from "@/components/atoms/Button";
-
+import companiesService from "@/services/api/companiesService";
 const AddContactModal = ({ isOpen, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    company: "",
+    companyId: "",
     notes: ""
   });
-
+const [companies, setCompanies] = useState([]);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [companiesLoading, setCompaniesLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadCompanies();
+    }
+  }, [isOpen]);
+
+  const loadCompanies = async () => {
+    try {
+      setCompaniesLoading(true);
+      const companiesData = await companiesService.getAll();
+      setCompanies(companiesData);
+    } catch (error) {
+      toast.error("Failed to load companies");
+    } finally {
+      setCompaniesLoading(false);
+    }
+  };
 
   const handleChange = (field) => (e) => {
     setFormData(prev => ({
@@ -37,14 +56,21 @@ const AddContactModal = ({ isOpen, onClose, onSave }) => {
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
     }
-    
-    if (!formData.email.trim()) {
+if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
+      newErrors.email = "Please enter a valid email address";
     }
-    
-    setErrors(newErrors);
+
+    if (formData.phone && !/^\+?[\d\s\-\(\)]+$/.test(formData.phone)) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+
+    if (!formData.companyId) {
+      newErrors.companyId = "Please select a company";
+    }
+
+setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
@@ -55,17 +81,27 @@ const AddContactModal = ({ isOpen, onClose, onSave }) => {
       return;
     }
 
-    setIsLoading(true);
-    
     try {
-      await onSave(formData);
+      setIsLoading(true);
+      setErrors({});
+
+      const selectedCompany = companies.find(c => c.Id === parseInt(formData.companyId));
+      
+      const contactData = {
+        ...formData,
+        company: selectedCompany ? selectedCompany.name : null,
+        companyId: formData.companyId ? parseInt(formData.companyId) : null
+      };
+
+      // Call the onSave function passed from parent
+      await onSave(contactData);
       
       // Reset form
       setFormData({
         name: "",
         email: "",
         phone: "",
-        company: "",
+        companyId: "",
         notes: ""
       });
       
@@ -80,17 +116,15 @@ const AddContactModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleClose = () => {
-    if (!isLoading) {
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        notes: ""
-      });
-      setErrors({});
-      onClose();
-    }
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      companyId: "",
+      notes: ""
+    });
+    setErrors({});
+    onClose();
   };
 
   return (
@@ -135,16 +169,29 @@ const AddContactModal = ({ isOpen, onClose, onSave }) => {
             placeholder="Enter phone number"
             disabled={isLoading}
           />
-          
-          <FormField
-            label="Company"
-            type="text"
-            value={formData.company}
-            onChange={handleChange("company")}
-            error={errors.company}
-            placeholder="Enter company name"
-            disabled={isLoading}
-          />
+<div className="space-y-1">
+            <label className="block text-sm font-medium text-slate-700">
+              Company <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.companyId}
+              onChange={handleChange("companyId")}
+              disabled={isLoading || companiesLoading}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50 disabled:cursor-not-allowed bg-white"
+            >
+              <option value="">
+                {companiesLoading ? "Loading companies..." : "Select a company"}
+              </option>
+              {companies.map(company => (
+                <option key={company.Id} value={company.Id}>
+                  {company.name} {company.industry && `- ${company.industry}`}
+                </option>
+              ))}
+            </select>
+            {errors.companyId && (
+              <p className="text-xs text-error mt-1">{errors.companyId}</p>
+            )}
+          </div>
         </div>
 
         <div>

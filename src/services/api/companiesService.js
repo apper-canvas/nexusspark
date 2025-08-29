@@ -220,7 +220,46 @@ class CompaniesService {
 
     const deletedCompany = { ...this.companies[index] };
     this.companies.splice(index, 1);
-    return deletedCompany;
+return deletedCompany;
+  }
+
+  // Get companies with updated relationship counts
+  async updateCompanyMetrics(companyId) {
+    const company = this.companies.find(c => c.Id === parseInt(companyId));
+    if (!company) return;
+
+    try {
+      // Update contact count
+      const { contactService } = await import('./contactService');
+      const contacts = await contactService.getAll();
+      const companyContacts = contacts.filter(c => 
+        c.company === company.name || c.companyId === company.Id
+      );
+      
+      // Update deal value
+      const { dealsService } = await import('./dealsService');
+      const deals = await dealsService.getAll();
+      const companyDeals = deals.filter(d => d.company === company.name);
+      const totalDealValue = companyDeals.reduce((sum, deal) => sum + (deal.value || 0), 0);
+      
+      // Update metrics
+      company.contactCount = companyContacts.length;
+      company.totalDealValue = totalDealValue;
+      
+      // Update last activity date from latest deal or contact
+      const lastContactDate = companyContacts.length > 0 ? 
+        Math.max(...companyContacts.map(c => new Date(c.updatedAt || c.createdAt).getTime())) : 0;
+      const lastDealDate = companyDeals.length > 0 ?
+        Math.max(...companyDeals.map(d => new Date(d.updatedAt || d.createdAt).getTime())) : 0;
+      
+      if (lastContactDate > 0 || lastDealDate > 0) {
+        company.lastActivityDate = new Date(Math.max(lastContactDate, lastDealDate)).toISOString();
+      }
+      
+      company.updatedAt = new Date().toISOString();
+    } catch (error) {
+      console.error('Failed to update company metrics:', error);
+    }
   }
 }
 
