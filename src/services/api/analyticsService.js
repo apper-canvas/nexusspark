@@ -1,6 +1,7 @@
-import { contactsService } from './contactService';
-import { dealsService } from './dealsService';
-import { activitiesService } from './activitiesService';
+import { contactService } from "./contactService";
+import { dealsService } from "./dealsService";
+import { activitiesService } from "./activitiesService";
+import React from "react";
 
 class AnalyticsService {
   // Pipeline Value: Total value by stage with trend indicator
@@ -84,10 +85,10 @@ class AnalyticsService {
     };
   }
 
-  // Top Performers: Contacts/companies by deal value and activity count
+// Top Performers: Contacts/companies by deal value and activity count
   async getTopPerformers() {
     const deals = await dealsService.getAll();
-    const contacts = await contactsService.getAll();
+    const contacts = await contactService.getAll();
     const activities = await activitiesService.getAll();
     
     const performerStats = contacts.map(contact => {
