@@ -12,6 +12,7 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
   const [contacts, setContacts] = useState([]);
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState({ contacts: false, deals: false });
+  
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -28,7 +29,7 @@ const CompanyDetailModal = ({ company, isOpen, onClose }) => {
     { id: "activities", label: "Activities", icon: "Clock" }
   ];
 
-const renderTabContent = () => {
+  const renderTabContent = () => {
     switch (activeTab) {
       case "overview":
         return (
@@ -114,7 +115,7 @@ const renderTabContent = () => {
           </div>
         );
 
-case "contacts":
+      case "contacts":
         return (
           <div className="space-y-4">
             {loading.contacts ? (
@@ -155,7 +156,7 @@ case "contacts":
           </div>
         );
 
-case "deals":
+      case "deals":
         return (
           <div className="space-y-4">
             {loading.deals ? (
@@ -219,7 +220,9 @@ case "deals":
       default:
         return null;
     }
-const loadCompanyData = async () => {
+  };
+
+  const loadCompanyData = async () => {
     if (!company || !isOpen) return;
 
     // Load contacts for this company
@@ -261,7 +264,7 @@ const loadCompanyData = async () => {
 
   useEffect(() => {
     loadCompanyData();
-}, [company, isOpen, activeTab]);
+  }, [company, isOpen, activeTab]);
 
   // Early return AFTER all hooks have been called
   if (!company) return null;
