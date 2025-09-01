@@ -135,20 +135,22 @@ const AddQuoteModal = ({ isOpen, onClose, onSave, quote = null }) => {
             />
           </FormField>
 
-          <FormField label="Expiration Date">
+<FormField label="Expiration Date">
             <Input
               type="date"
               value={formData.expirationDate}
               onChange={(e) => handleInputChange('expirationDate', e.target.value)}
+              placeholder="Select date or type manually"
               disabled={loading}
             />
           </FormField>
 
-          <FormField label="Valid Until">
+<FormField label="Valid Until">
             <Input
               type="date"
               value={formData.validUntil}
               onChange={(e) => handleInputChange('validUntil', e.target.value)}
+              placeholder="Select date or type manually"
               disabled={loading}
             />
           </FormField>
