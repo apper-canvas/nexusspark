@@ -6,8 +6,68 @@ const Input = forwardRef(({
   type = "text",
   error = false,
   disabled = false,
-  ...props
+  // Extract valid HTML input attributes
+  value,
+  defaultValue,
+  placeholder,
+  onChange,
+  onBlur,
+  onFocus,
+  onClick,
+  onKeyDown,
+  onKeyUp,
+  onKeyPress,
+  name,
+  id,
+  required,
+  readOnly,
+  autoComplete,
+  autoFocus,
+  min,
+  max,
+  step,
+  maxLength,
+  minLength,
+  pattern,
+  accept,
+  multiple,
+  size,
+  ...rest // Any other props that shouldn't go to input
 }, ref) => {
+  // Only pass valid HTML input attributes
+  const inputProps = {
+    value,
+    defaultValue,
+    placeholder,
+    onChange,
+    onBlur,
+    onFocus,
+    onClick,
+    onKeyDown,
+    onKeyUp,
+    onKeyPress,
+    name,
+    id,
+    required,
+    readOnly,
+    autoComplete,
+    autoFocus,
+    min,
+    max,
+    step,
+    maxLength,
+    minLength,
+    pattern,
+    accept,
+    multiple,
+    size
+  };
+
+  // Filter out undefined values
+  const validInputProps = Object.fromEntries(
+    Object.entries(inputProps).filter(([_, value]) => value !== undefined)
+  );
+
   return (
     <input
       ref={ref}
@@ -23,7 +83,7 @@ const Input = forwardRef(({
           : "border-slate-300 focus:border-primary focus:ring-primary/20",
         className
       )}
-      {...props}
+      {...validInputProps}
     />
   );
 });
