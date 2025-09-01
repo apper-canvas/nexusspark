@@ -14,6 +14,7 @@ import ContactsPage from "@/components/pages/ContactsPage";
 import DealsPage from "@/components/pages/DealsPage";
 import DealDetailPage from "@/components/pages/DealDetailPage";
 import CompaniesPage from "@/components/pages/CompaniesPage";
+import QuotesPage from "@/components/pages/QuotesPage";
 import ActivitiesPage from "@/components/pages/ActivitiesPage";
 import AnalyticsPage from "@/components/pages/AnalyticsPage";
 
@@ -137,6 +138,7 @@ function App() {
             <Route path="deals/:id" element={<DealDetailPage />} />
             <Route path="companies" element={<CompaniesPage />} />
             <Route path="activities" element={<ActivitiesPage />} />
+<Route path="quotes" element={<QuotesPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
         </Routes>
