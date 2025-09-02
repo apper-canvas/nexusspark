@@ -10,6 +10,7 @@ const navigationItems = [
     { name: "Deals", href: "/deals", icon: "Target" },
     { name: "Companies", href: "/companies", icon: "Building2" },
     { name: "Quotes", href: "/quotes", icon: "Receipt" },
+    { name: "Transactions", href: "/transactions", icon: "CreditCard" },
     { name: "Activities", href: "/activities", icon: "Activity" },
     { name: "Analytics", href: "/analytics", icon: "BarChart3" }
   ];

@@ -15,9 +15,9 @@ import DealsPage from "@/components/pages/DealsPage";
 import DealDetailPage from "@/components/pages/DealDetailPage";
 import CompaniesPage from "@/components/pages/CompaniesPage";
 import QuotesPage from "@/components/pages/QuotesPage";
+import TransactionsPage from "@/components/pages/TransactionsPage";
 import ActivitiesPage from "@/components/pages/ActivitiesPage";
 import AnalyticsPage from "@/components/pages/AnalyticsPage";
-
 // Create auth context
 export const AuthContext = createContext(null);
 
@@ -137,8 +137,9 @@ return <div className="loading flex items-center justify-center p-6 h-full w-ful
             <Route path="deals" element={<DealsPage />} />
             <Route path="deals/:id" element={<DealDetailPage />} />
             <Route path="companies" element={<CompaniesPage />} />
-            <Route path="activities" element={<ActivitiesPage />} />
-<Route path="quotes" element={<QuotesPage />} />
+<Route path="activities" element={<ActivitiesPage />} />
+            <Route path="quotes" element={<QuotesPage />} />
+            <Route path="transactions" element={<TransactionsPage />} />
             <Route path="analytics" element={<AnalyticsPage />} />
           </Route>
         </Routes>
